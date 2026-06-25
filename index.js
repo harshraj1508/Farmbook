@@ -211,6 +211,105 @@ app.post(
   },
 );
 
+/*
+CREATE PLANTING
+JWT PROTECTED
+*/
+app.post(
+  "/api/v1/plots/:id/plantings",
+  authenticateToken,
+  authorizeRoles("OWNER"),
+  async (req, res) => {
+    try {
+      const plot_id = Number(req.params.id);
+      const { crop_id, sow_date, plant_count, expected_harvest, status } =
+        req.body;
+
+      const plantings = await prisma.plantings.create({
+        data: {
+          plot_id,
+          crop_id,
+          sow_date,
+          plant_count,
+          expected_harvest,
+          status,
+        },
+      });
+
+      res.status(201).json(plantings);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+  },
+);
+
+/*
+CREATE CROP
+JWT PROTECTED
+*/
+app.post(
+  "/api/v1/crops",
+  authenticateToken,
+  authorizeRoles("OWNER"),
+  async (req, res) => {
+    try {
+      const { name, variety, protocol } = req.body;
+
+      const crop = await prisma.crop.create({
+        data: {
+          name,
+          variety,
+          protocol,
+        },
+      });
+
+      res.status(201).json(crop);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+  },
+);
+
+/*
+CREATE PLANTING
+JWT PROTECTED
+*/
+app.put(
+  "/api/v1/plantings/:id/close",
+  authenticateToken,
+  authorizeRoles("OWNER"),
+  async (req, res) => {
+    try {
+      const planting_id = Number(req.params.id);
+
+      const planting = await prisma.plantings.update({
+        where: {
+          id:planting_id
+        },
+        data: {
+          status: "CLOSED",
+        },
+      });
+      
+      res.status(201).json(planting);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
+  },
+);
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });

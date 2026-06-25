@@ -36,3 +36,24 @@ model plots {
   status      String    @db.VarChar(20)
 
 }
+
+model plantings {
+  id                Int      @id @default(autoincrement())
+  plot_id           Int
+  crop_id           Int
+  sow_date          DateTime
+  plant_count       Int
+  expected_harvest  DateTime
+  status            String
+
+  @@map("plantings")
+}
+
+model crop {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  variety   String @db.VarChar(100)
+  protocol  Json
+
+  @@map("crop")
+}
